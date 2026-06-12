@@ -74,6 +74,14 @@ app = FastAPI(
     version="1.0.0",
     description="API for a Custom GPT fat-loss coach to read/write Google Sheets inventory, weight logs, meal logs, and usage logs.",
 )
+@app.get("/", include_in_schema=False)
+def root() -> Dict[str, Any]:
+    return {
+        "ok": True,
+        "service": "Fat Loss Coach Inventory API",
+        "health_endpoint": "/health",
+        "docs": "/docs"
+    }
 
 
 def today_iso() -> str:
