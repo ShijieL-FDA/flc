@@ -1,0 +1,95 @@
+# Fat Loss Coach Action Package
+
+This package turns your Custom GPT into a real inventory/weight-management agent:
+
+**Custom GPT → GPT Action → FastAPI backend → Google Sheets database**
+
+The Google Sheet is the source of truth for:
+- inventory
+- morning weight
+- meal logs
+- ingredient usage
+- food catalog
+- settings
+
+## Files
+
+- `app.py` — FastAPI backend that reads/writes Google Sheets.
+- `requirements.txt` — Python dependencies.
+- `.env.example` — required environment variables.
+- `openapi.yaml` — paste into the Custom GPT Action schema after replacing the server URL.
+- `gpt_instructions_action_patch.md` — add to your Custom GPT Instructions.
+- `morning_task_prompt.md` — prompt for your daily morning ChatGPT Task.
+- `evening_task_prompt.md` — optional evening prompt to keep inventory accurate.
+
+## Google Sheet setup
+
+1. Upload/import `fat_loss_agent_google_sheets_template.xlsx` into Google Sheets.
+2. Rename it if desired, e.g. `Fat Loss Coach DB`.
+3. Copy the spreadsheet ID from the URL:
+   - `https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit...`
+4. Create a Google Cloud project.
+5. Enable Google Sheets API.
+6. Create a service account.
+7. Create/download a JSON key for the service account.
+8. Share the Google Sheet with the service account email as Editor.
+
+## Backend deployment
+
+Deploy this directory to any Python web host that supports FastAPI, for example Render, Railway, Fly.io, Google Cloud Run, or a small VPS.
+
+Start command:
+
+```bash
+uvicorn app:app --host 0.0.0.0 --port $PORT
+```
+
+Environment variables:
+
+```bash
+API_KEY=use_a_long_random_secret
+SPREADSHEET_ID=your_google_sheet_id
+GOOGLE_SERVICE_ACCOUNT_JSON_BASE64=base64_encoded_service_account_json
+TIMEZONE=America/Los_Angeles
+```
+
+Generate `GOOGLE_SERVICE_ACCOUNT_JSON_BASE64`:
+
+```bash
+base64 -i service-account.json | tr -d '\n'
+```
+
+## GPT Action setup
+
+1. Open your Custom GPT editor.
+2. Go to Configure → Actions → Create new action.
+3. Paste `openapi.yaml`.
+4. Replace `https://YOUR-DEPLOYED-API-DOMAIN` with your deployed API URL.
+5. Authentication: choose API Key.
+6. API key type: Custom header.
+7. Header name: `X-API-Key`.
+8. Secret: use the same value as your backend `API_KEY` env var.
+9. Test `/health`, then `/coach-context`.
+
+## Operational rule
+
+The GPT should **read inventory every morning** and use it for meal planning.
+
+It should **not deduct inventory just because it created a plan**. Deduct inventory only after you confirm actual consumption, for example:
+
+> I ate according to plan. Deduct the used ingredients.
+
+or
+
+> I changed dinner: I used 250g chicken instead of 300g and no rice. Update inventory.
+
+This prevents the database from drifting away from reality.
+
+## Recommended task setup
+
+Use two tasks:
+
+1. Morning task: asks for weight, training, and runs plan generation.
+2. Evening task: asks what you actually ate, then updates inventory.
+
+The evening task is optional, but inventory accuracy depends on actual-consumption confirmation.
