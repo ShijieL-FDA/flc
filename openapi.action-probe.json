@@ -1,0 +1,27 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Fat Loss Coach Action Probe",
+    "version": "1.0.0",
+    "description": "Minimal no-auth schema used only to prove Custom GPT Actions can reach the Render backend."
+  },
+  "servers": [
+    {
+      "url": "https://flc-d7oi.onrender.com",
+      "description": "Render production API"
+    }
+  ],
+  "paths": {
+    "/action-probe": {
+      "get": {
+        "operationId": "actionProbe",
+        "summary": "No-auth connectivity probe for Custom GPT Action debugging.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}

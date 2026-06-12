@@ -19,6 +19,7 @@ import uuid
 from datetime import date, datetime, timedelta
 from functools import lru_cache
 from typing import Any, Dict, List, Optional, Tuple
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query
 from google.oauth2.service_account import Credentials
@@ -85,8 +86,14 @@ def root() -> Dict[str, Any]:
 
 
 def today_iso() -> str:
-    # Date is supplied by the client/GPT in most cases; this fallback uses server date.
-    return date.today().isoformat()
+    return local_today().isoformat()
+
+
+def local_today() -> date:
+    try:
+        return datetime.now(ZoneInfo(TIMEZONE)).date()
+    except ZoneInfoNotFoundError:
+        return date.today()
 
 
 def now_iso() -> str:
@@ -174,11 +181,15 @@ def rows_as_dicts(sheet_name: str) -> Tuple[List[str], List[Dict[str, Any]]]:
 
 
 def write_dict_rows(sheet_name: str, headers: List[str], rows: List[Dict[str, Any]]) -> None:
-    clear_values(sheet_name)
     if not rows:
+        clear_values(sheet_name)
         return
-    values = [[row.get(h, "") for h in headers] for row in rows]
+    values = [[sheet_value(row.get(h, "")) for h in headers] for row in rows]
     update_values(sheet_name, "A2", values)
+
+
+def sheet_value(value: Any) -> Any:
+    return "" if value is None else value
 
 
 def as_float(value: Any, default: Optional[float] = None) -> Optional[float]:
@@ -223,30 +234,51 @@ def parse_date_maybe(value: Any) -> Optional[date]:
 
 
 def active_inventory(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    out = []
-    for r in rows:
-        status = str(r.get("status", "active")).lower() or "active"
-        qty = as_float(r.get("quantity"), 0) or 0
-        if status == "active" and qty > 0:
-            out.append(r)
-    return out
+    return [r for r in rows if is_active_inventory_row(r)]
 
 
-def find_inventory_index(rows: List[Dict[str, Any]], item_id: Optional[str], item_en: Optional[str], item_zh: Optional[str]) -> int:
+def is_active_inventory_row(row: Dict[str, Any]) -> bool:
+    status = str(row.get("status", "active")).lower() or "active"
+    qty = as_float(row.get("quantity"), 0) or 0
+    return status == "active" and qty > 0
+
+
+def find_inventory_index(rows: List[Dict[str, Any]], item_id: Optional[str], item_en: Optional[str], item_zh: Optional[str], *, active_only: bool = False) -> int:
     def norm(x: Any) -> str:
         return str(x or "").strip().lower()
     if item_id:
         for i, r in enumerate(rows):
             if norm(r.get("id")) == norm(item_id):
+                if active_only and not is_active_inventory_row(r):
+                    raise HTTPException(status_code=409, detail=f"Inventory item is not active or has no quantity: {item_id}")
                 return i
+        raise HTTPException(status_code=404, detail=f"Inventory item not found: id={item_id}")
+
+    candidates = []
     if item_en:
         for i, r in enumerate(rows):
-            if norm(r.get("item_en")) == norm(item_en):
-                return i
+            if norm(r.get("item_en")) == norm(item_en) and (not active_only or is_active_inventory_row(r)):
+                candidates.append(i)
     if item_zh:
         for i, r in enumerate(rows):
-            if norm(r.get("item_zh")) == norm(item_zh):
-                return i
+            if norm(r.get("item_zh")) == norm(item_zh) and (not active_only or is_active_inventory_row(r)):
+                candidates.append(i)
+    candidates = list(dict.fromkeys(candidates))
+    if len(candidates) == 1:
+        return candidates[0]
+    if len(candidates) > 1:
+        matches = [
+            {
+                "id": rows[i].get("id"),
+                "item_en": rows[i].get("item_en"),
+                "item_zh": rows[i].get("item_zh"),
+                "quantity": rows[i].get("quantity"),
+                "unit": rows[i].get("unit"),
+                "status": rows[i].get("status"),
+            }
+            for i in candidates
+        ]
+        raise HTTPException(status_code=409, detail={"message": "Ambiguous inventory match; use item_id.", "matches": matches})
     raise HTTPException(status_code=404, detail=f"Inventory item not found: id={item_id}, item_en={item_en}, item_zh={item_zh}")
 
 
@@ -258,16 +290,16 @@ class InventoryItemIn(BaseModel):
     unit: str
     storage: str = Field(default="fridge", description="fridge, freezer, pantry, counter")
     purchase_date: Optional[str] = None
-    opened_date: Optional[str] = ""
-    use_by: Optional[str] = ""
-    calories_per_100g: Optional[float] = ""
-    protein_per_100g: Optional[float] = ""
-    carbs_per_100g: Optional[float] = ""
-    fat_per_100g: Optional[float] = ""
+    opened_date: Optional[str] = None
+    use_by: Optional[str] = None
+    calories_per_100g: Optional[float] = None
+    protein_per_100g: Optional[float] = None
+    carbs_per_100g: Optional[float] = None
+    fat_per_100g: Optional[float] = None
     status: str = "active"
     priority: str = "medium"
-    min_quantity: Optional[float] = ""
-    target_quantity: Optional[float] = ""
+    min_quantity: Optional[float] = None
+    target_quantity: Optional[float] = None
     notes: Optional[str] = ""
 
 
@@ -304,12 +336,12 @@ class ConsumePayload(BaseModel):
 class WeightEntry(BaseModel):
     date: Optional[str] = None
     weight_lb: float
-    sleep_hours: Optional[float] = ""
-    hunger_1_10: Optional[float] = ""
-    training_perf_1_10: Optional[float] = ""
+    sleep_hours: Optional[float] = None
+    hunger_1_10: Optional[float] = None
+    training_perf_1_10: Optional[float] = None
     training: Optional[str] = ""
-    calories: Optional[float] = ""
-    protein_g: Optional[float] = ""
+    calories: Optional[float] = None
+    protein_g: Optional[float] = None
     fast_food: Optional[str] = "no"
     alcohol: Optional[str] = "no"
     night_snack: Optional[str] = "no"
@@ -320,10 +352,10 @@ class MealEntry(BaseModel):
     date: Optional[str] = None
     meal_type: str
     planned_or_actual: str = Field(default="planned", description="planned or actual")
-    calories: Optional[float] = ""
-    protein_g: Optional[float] = ""
-    carbs_g: Optional[float] = ""
-    fat_g: Optional[float] = ""
+    calories: Optional[float] = None
+    protein_g: Optional[float] = None
+    carbs_g: Optional[float] = None
+    fat_g: Optional[float] = None
     food_summary: Optional[str] = ""
     inventory_used: Optional[str] = ""
     notes: Optional[str] = ""
@@ -336,6 +368,11 @@ class MealLogPayload(BaseModel):
 @app.get("/health", dependencies=[Depends(require_api_key)])
 def health() -> Dict[str, Any]:
     return {"ok": True, "spreadsheet_id_configured": bool(SPREADSHEET_ID), "timezone": TIMEZONE}
+
+
+@app.get("/action-probe")
+def action_probe() -> Dict[str, Any]:
+    return {"ok": True, "service": "Fat Loss Coach Inventory API", "probe": "action", "timezone": TIMEZONE}
 
 
 @app.post("/setup/headers", dependencies=[Depends(require_api_key)])
@@ -366,7 +403,7 @@ def add_inventory(payload: AddInventoryPayload) -> Dict[str, Any]:
         d["id"] = inv_id
         d["purchase_date"] = d.get("purchase_date") or today_iso()
         d["last_updated"] = now_iso()
-        row = [d.get(h, "") for h in headers]
+        row = [sheet_value(d.get(h, "")) for h in headers]
         rows_to_append.append(row)
         created.append({"id": inv_id, "item_en": d.get("item_en"), "item_zh": d.get("item_zh"), "quantity": d.get("quantity"), "unit": d.get("unit")})
     append_values(SHEET_NAMES["inventory"], rows_to_append)
@@ -402,7 +439,7 @@ def consume_inventory(payload: ConsumePayload) -> Dict[str, Any]:
     # Work on a mutable copy; do not write until all validations pass.
     new_rows = [dict(r) for r in rows]
     for item in payload.items:
-        idx = find_inventory_index(new_rows, item.item_id, item.item_en, item.item_zh)
+        idx = find_inventory_index(new_rows, item.item_id, item.item_en, item.item_zh, active_only=True)
         r = new_rows[idx]
         current_qty = as_float(r.get("quantity"), 0) or 0
         current_unit = str(r.get("unit", "")).strip()
@@ -449,7 +486,7 @@ def consume_inventory(payload: ConsumePayload) -> Dict[str, Any]:
 @app.get("/inventory/expiring", dependencies=[Depends(require_api_key)])
 def expiring_inventory(days: int = Query(default=3, ge=0, le=30)) -> Dict[str, Any]:
     _, rows = rows_as_dicts(SHEET_NAMES["inventory"])
-    today = date.today()
+    today = local_today()
     cutoff = today + timedelta(days=days)
     items = []
     for r in active_inventory(rows):
@@ -467,7 +504,7 @@ def log_weight(entry: WeightEntry) -> Dict[str, Any]:
     d = entry.model_dump()
     d["date"] = d.get("date") or today_iso()
     headers = HEADERS["WeightLog"]
-    append_values(SHEET_NAMES["weight"], [[d.get(h, "") for h in headers]])
+    append_values(SHEET_NAMES["weight"], [[sheet_value(d.get(h, "")) for h in headers]])
     return {"logged": d}
 
 
@@ -475,7 +512,7 @@ def log_weight(entry: WeightEntry) -> Dict[str, Any]:
 def get_weight_log(days: int = Query(default=30, ge=1, le=365)) -> Dict[str, Any]:
     _, rows = rows_as_dicts(SHEET_NAMES["weight"])
     parsed = []
-    cutoff = date.today() - timedelta(days=days)
+    cutoff = local_today() - timedelta(days=days)
     for r in rows:
         d = parse_date_maybe(r.get("date"))
         wt = as_float(r.get("weight_lb"))
@@ -553,7 +590,7 @@ def log_meals(payload: MealLogPayload) -> Dict[str, Any]:
     for meal in payload.meals:
         d = meal.model_dump()
         d["date"] = d.get("date") or today_iso()
-        rows.append([d.get(h, "") for h in headers])
+        rows.append([sheet_value(d.get(h, "")) for h in headers])
     append_values(SHEET_NAMES["meal"], rows)
     return {"logged_count": len(rows)}
 
@@ -562,7 +599,10 @@ def log_meals(payload: MealLogPayload) -> Dict[str, Any]:
 def suggested_shopping_list() -> Dict[str, Any]:
     _, rows = rows_as_dicts(SHEET_NAMES["inventory"])
     suggestions = []
-    for r in active_inventory(rows):
+    for r in rows:
+        status = str(r.get("status", "active")).lower() or "active"
+        if status not in {"active", "finished"}:
+            continue
         qty = as_float(r.get("quantity"), 0) or 0
         min_qty = as_float(r.get("min_quantity"))
         target_qty = as_float(r.get("target_quantity"))

@@ -4,8 +4,8 @@ info:
   version: 1.0.0
   description: API used by a Custom GPT fat-loss coach to manage Google Sheets inventory, body-weight logs, meal logs, and usage logs.
 servers:
-  - url: https://YOUR-DEPLOYED-API-DOMAIN
-    description: Replace with your deployed FastAPI base URL
+  - url: https://flc-d7oi.onrender.com
+    description: Render production API
 security:
   - ApiKeyAuth: []
 components:
@@ -93,9 +93,9 @@ components:
         training: { type: string }
         calories: { type: number }
         protein_g: { type: number }
-        fast_food: { type: string, enum: [yes, no] }
-        alcohol: { type: string, enum: [yes, no] }
-        night_snack: { type: string, enum: [yes, no] }
+        fast_food: { type: string, enum: ["yes", "no"] }
+        alcohol: { type: string, enum: ["yes", "no"] }
+        night_snack: { type: string, enum: ["yes", "no"] }
         notes: { type: string }
     MealEntry:
       type: object
@@ -119,6 +119,13 @@ components:
           type: array
           items: { $ref: '#/components/schemas/MealEntry' }
 paths:
+  /action-probe:
+    get:
+      operationId: actionProbe
+      summary: No-auth connectivity probe for Custom GPT Action debugging.
+      security: []
+      responses:
+        '200': { description: OK }
   /health:
     get:
       operationId: health

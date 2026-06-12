@@ -17,7 +17,10 @@ The Google Sheet is the source of truth for:
 - `app.py` — FastAPI backend that reads/writes Google Sheets.
 - `requirements.txt` — Python dependencies.
 - `.env.example` — required environment variables.
-- `openapi.yaml` — paste into the Custom GPT Action schema after replacing the server URL.
+- `openapi.action-probe.json` — temporary no-auth schema to prove Custom GPT Actions can reach Render.
+- `openapi.health-only.json` — temporary authenticated schema to prove `X-API-Key` is configured correctly.
+- `openapi.render.json` — final schema for the deployed Render backend.
+- `openapi.yaml` — YAML equivalent kept for reference; prefer the JSON schemas for GPT Actions.
 - `gpt_instructions_action_patch.md` — add to your Custom GPT Instructions.
 - `morning_task_prompt.md` — prompt for your daily morning ChatGPT Task.
 - `evening_task_prompt.md` — optional evening prompt to keep inventory accurate.
@@ -59,17 +62,25 @@ Generate `GOOGLE_SERVICE_ACCOUNT_JSON_BASE64`:
 base64 -i service-account.json | tr -d '\n'
 ```
 
-## GPT Action setup
+## GPT Action setup and debug flow
 
 1. Open your Custom GPT editor.
 2. Go to Configure → Actions → Create new action.
-3. Paste `openapi.yaml`.
-4. Replace `https://YOUR-DEPLOYED-API-DOMAIN` with your deployed API URL.
-5. Authentication: choose API Key.
-6. API key type: Custom header.
-7. Header name: `X-API-Key`.
-8. Secret: use the same value as your backend `API_KEY` env var.
-9. Test `/health`, then `/coach-context`.
+3. First paste `openapi.action-probe.json`.
+4. Set Authentication to None.
+5. Use the Action editor Test button for `actionProbe`.
+6. Confirm Render logs show `GET /action-probe 200`.
+7. Replace the schema with `openapi.health-only.json`.
+8. Authentication: choose API Key.
+9. API key type: Custom header.
+10. Header name: `X-API-Key`.
+11. Secret: use the same raw value as your backend `API_KEY` env var.
+12. Use the Action editor Test button for `health`.
+13. Confirm Render logs show `GET /health 200`.
+14. Replace the schema with `openapi.render.json`.
+15. Test operations in this order: `health`, `getInventory`, `getTrendSummary`, `getCoachContext`, `logWeight`.
+
+Do not use normal chat messages to diagnose initial Action connectivity. The Action editor Test button gives a cleaner signal, and Render logs should show the exact route being called.
 
 ## Operational rule
 
