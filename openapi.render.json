@@ -157,8 +157,30 @@
           },
           "fields": {
             "type": "object",
-            "additionalProperties": true,
-            "description": "Fields to update, e.g. quantity, status, use_by, notes."
+            "description": "Fields to update, e.g. quantity, status, use_by, notes.",
+            "properties": {
+              "quantity": {
+                "type": "number"
+              },
+              "status": {
+                "type": "string"
+              },
+              "use_by": {
+                "type": "string"
+              },
+              "notes": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string"
+              },
+              "min_quantity": {
+                "type": "number"
+              },
+              "target_quantity": {
+                "type": "number"
+              }
+            }
           }
         }
       },
@@ -371,7 +393,20 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "service": {
+                      "type": "string"
+                    },
+                    "probe": {
+                      "type": "string"
+                    },
+                    "timezone": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -423,7 +458,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "properties": {
+                    "updated_sheets": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -455,7 +497,231 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "properties": {
+                    "settings": {
+                      "type": "object",
+                      "properties": {
+                        "timezone": {
+                          "type": "string"
+                        },
+                        "target_calories": {
+                          "type": "string"
+                        },
+                        "target_protein_g": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "inventory_active_count": {
+                      "type": "integer"
+                    },
+                    "inventory_active": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "item_en": {
+                            "type": "string"
+                          },
+                          "item_zh": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string"
+                          },
+                          "quantity": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string"
+                          },
+                          "storage": {
+                            "type": "string"
+                          },
+                          "purchase_date": {
+                            "type": "string"
+                          },
+                          "opened_date": {
+                            "type": "string"
+                          },
+                          "use_by": {
+                            "type": "string"
+                          },
+                          "calories_per_100g": {
+                            "type": "number"
+                          },
+                          "protein_per_100g": {
+                            "type": "number"
+                          },
+                          "carbs_per_100g": {
+                            "type": "number"
+                          },
+                          "fat_per_100g": {
+                            "type": "number"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "priority": {
+                            "type": "string"
+                          },
+                          "min_quantity": {
+                            "type": "number"
+                          },
+                          "target_quantity": {
+                            "type": "number"
+                          },
+                          "notes": {
+                            "type": "string"
+                          },
+                          "last_updated": {
+                            "type": "string"
+                          },
+                          "days_until_use_by": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    },
+                    "expiring_items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "item_en": {
+                            "type": "string"
+                          },
+                          "item_zh": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string"
+                          },
+                          "quantity": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string"
+                          },
+                          "storage": {
+                            "type": "string"
+                          },
+                          "purchase_date": {
+                            "type": "string"
+                          },
+                          "opened_date": {
+                            "type": "string"
+                          },
+                          "use_by": {
+                            "type": "string"
+                          },
+                          "calories_per_100g": {
+                            "type": "number"
+                          },
+                          "protein_per_100g": {
+                            "type": "number"
+                          },
+                          "carbs_per_100g": {
+                            "type": "number"
+                          },
+                          "fat_per_100g": {
+                            "type": "number"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "priority": {
+                            "type": "string"
+                          },
+                          "min_quantity": {
+                            "type": "number"
+                          },
+                          "target_quantity": {
+                            "type": "number"
+                          },
+                          "notes": {
+                            "type": "string"
+                          },
+                          "last_updated": {
+                            "type": "string"
+                          },
+                          "days_until_use_by": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    },
+                    "trend_summary": {
+                      "type": "object",
+                      "properties": {
+                        "entries_count": {
+                          "type": "integer"
+                        },
+                        "latest_weight_lb": {
+                          "type": "number"
+                        },
+                        "latest_date": {
+                          "type": "string"
+                        },
+                        "recent_7_day_avg_lb": {
+                          "type": "number"
+                        },
+                        "previous_7_day_avg_lb": {
+                          "type": "number"
+                        },
+                        "trend_delta_lb_per_week": {
+                          "type": "number"
+                        },
+                        "weekly_loss_lb": {
+                          "type": "number"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "adjustment_guidance": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "suggested_shopping_list": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "item_en": {
+                            "type": "string"
+                          },
+                          "item_zh": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string"
+                          },
+                          "current_quantity": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string"
+                          },
+                          "suggested_buy_quantity": {
+                            "type": "number"
+                          },
+                          "reason": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "timezone": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -484,7 +750,82 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "item_en": {
+                            "type": "string"
+                          },
+                          "item_zh": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string"
+                          },
+                          "quantity": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string"
+                          },
+                          "storage": {
+                            "type": "string"
+                          },
+                          "purchase_date": {
+                            "type": "string"
+                          },
+                          "opened_date": {
+                            "type": "string"
+                          },
+                          "use_by": {
+                            "type": "string"
+                          },
+                          "calories_per_100g": {
+                            "type": "number"
+                          },
+                          "protein_per_100g": {
+                            "type": "number"
+                          },
+                          "carbs_per_100g": {
+                            "type": "number"
+                          },
+                          "fat_per_100g": {
+                            "type": "number"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "priority": {
+                            "type": "string"
+                          },
+                          "min_quantity": {
+                            "type": "number"
+                          },
+                          "target_quantity": {
+                            "type": "number"
+                          },
+                          "notes": {
+                            "type": "string"
+                          },
+                          "last_updated": {
+                            "type": "string"
+                          },
+                          "days_until_use_by": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -513,7 +854,34 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "properties": {
+                    "created_count": {
+                      "type": "integer"
+                    },
+                    "created": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "item_en": {
+                            "type": "string"
+                          },
+                          "item_zh": {
+                            "type": "string"
+                          },
+                          "quantity": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -542,7 +910,82 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "properties": {
+                    "updated_count": {
+                      "type": "integer"
+                    },
+                    "updated": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "item_en": {
+                            "type": "string"
+                          },
+                          "item_zh": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string"
+                          },
+                          "quantity": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string"
+                          },
+                          "storage": {
+                            "type": "string"
+                          },
+                          "purchase_date": {
+                            "type": "string"
+                          },
+                          "opened_date": {
+                            "type": "string"
+                          },
+                          "use_by": {
+                            "type": "string"
+                          },
+                          "calories_per_100g": {
+                            "type": "number"
+                          },
+                          "protein_per_100g": {
+                            "type": "number"
+                          },
+                          "carbs_per_100g": {
+                            "type": "number"
+                          },
+                          "fat_per_100g": {
+                            "type": "number"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "priority": {
+                            "type": "string"
+                          },
+                          "min_quantity": {
+                            "type": "number"
+                          },
+                          "target_quantity": {
+                            "type": "number"
+                          },
+                          "notes": {
+                            "type": "string"
+                          },
+                          "last_updated": {
+                            "type": "string"
+                          },
+                          "days_until_use_by": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -572,7 +1015,43 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "properties": {
+                    "dry_run": {
+                      "type": "boolean"
+                    },
+                    "consumed_count": {
+                      "type": "integer"
+                    },
+                    "changes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "item_en": {
+                            "type": "string"
+                          },
+                          "item_zh": {
+                            "type": "string"
+                          },
+                          "before": {
+                            "type": "number"
+                          },
+                          "used": {
+                            "type": "number"
+                          },
+                          "after": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -606,7 +1085,85 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    },
+                    "days": {
+                      "type": "integer"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "item_en": {
+                            "type": "string"
+                          },
+                          "item_zh": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string"
+                          },
+                          "quantity": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string"
+                          },
+                          "storage": {
+                            "type": "string"
+                          },
+                          "purchase_date": {
+                            "type": "string"
+                          },
+                          "opened_date": {
+                            "type": "string"
+                          },
+                          "use_by": {
+                            "type": "string"
+                          },
+                          "calories_per_100g": {
+                            "type": "number"
+                          },
+                          "protein_per_100g": {
+                            "type": "number"
+                          },
+                          "carbs_per_100g": {
+                            "type": "number"
+                          },
+                          "fat_per_100g": {
+                            "type": "number"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "priority": {
+                            "type": "string"
+                          },
+                          "min_quantity": {
+                            "type": "number"
+                          },
+                          "target_quantity": {
+                            "type": "number"
+                          },
+                          "notes": {
+                            "type": "string"
+                          },
+                          "last_updated": {
+                            "type": "string"
+                          },
+                          "days_until_use_by": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -635,7 +1192,49 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "properties": {
+                    "logged": {
+                      "type": "object",
+                      "properties": {
+                        "date": {
+                          "type": "string"
+                        },
+                        "weight_lb": {
+                          "type": "number"
+                        },
+                        "sleep_hours": {
+                          "type": "number"
+                        },
+                        "hunger_1_10": {
+                          "type": "number"
+                        },
+                        "training_perf_1_10": {
+                          "type": "number"
+                        },
+                        "training": {
+                          "type": "string"
+                        },
+                        "calories": {
+                          "type": "number"
+                        },
+                        "protein_g": {
+                          "type": "number"
+                        },
+                        "fast_food": {
+                          "type": "string"
+                        },
+                        "alcohol": {
+                          "type": "string"
+                        },
+                        "night_snack": {
+                          "type": "string"
+                        },
+                        "notes": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -664,7 +1263,55 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "date": {
+                            "type": "string"
+                          },
+                          "weight_lb": {
+                            "type": "number"
+                          },
+                          "sleep_hours": {
+                            "type": "number"
+                          },
+                          "hunger_1_10": {
+                            "type": "number"
+                          },
+                          "training_perf_1_10": {
+                            "type": "number"
+                          },
+                          "training": {
+                            "type": "string"
+                          },
+                          "calories": {
+                            "type": "number"
+                          },
+                          "protein_g": {
+                            "type": "number"
+                          },
+                          "fast_food": {
+                            "type": "string"
+                          },
+                          "alcohol": {
+                            "type": "string"
+                          },
+                          "night_snack": {
+                            "type": "string"
+                          },
+                          "notes": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -683,7 +1330,35 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "properties": {
+                    "entries_count": {
+                      "type": "integer"
+                    },
+                    "latest_weight_lb": {
+                      "type": "number"
+                    },
+                    "latest_date": {
+                      "type": "string"
+                    },
+                    "recent_7_day_avg_lb": {
+                      "type": "number"
+                    },
+                    "previous_7_day_avg_lb": {
+                      "type": "number"
+                    },
+                    "trend_delta_lb_per_week": {
+                      "type": "number"
+                    },
+                    "weekly_loss_lb": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "adjustment_guidance": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -712,7 +1387,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "properties": {
+                    "logged_count": {
+                      "type": "integer"
+                    }
+                  }
                 }
               }
             }
@@ -731,7 +1410,40 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "item_en": {
+                            "type": "string"
+                          },
+                          "item_zh": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string"
+                          },
+                          "current_quantity": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "type": "string"
+                          },
+                          "suggested_buy_quantity": {
+                            "type": "number"
+                          },
+                          "reason": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
