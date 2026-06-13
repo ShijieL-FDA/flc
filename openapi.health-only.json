@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Fat Loss Coach Health Check",
+    "title": "FLC Health Only API",
     "version": "1.0.0",
-    "description": "Minimal authenticated schema used to prove Custom GPT Actions send X-API-Key correctly."
+    "description": "Health-only debug schema for the fat loss coach backend."
   },
   "servers": [
     {
@@ -30,13 +30,31 @@
     "/health": {
       "get": {
         "operationId": "health",
-        "summary": "Check whether the authenticated API is reachable.",
+        "summary": "Check authenticated backend health.",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Backend is healthy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "spreadsheet_id_configured": {
+                      "type": "boolean"
+                    },
+                    "timezone": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Invalid or missing API key"
+            "description": "Invalid or missing API key."
           }
         }
       }

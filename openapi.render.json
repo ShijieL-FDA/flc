@@ -27,43 +27,134 @@
     "schemas": {
       "InventoryItemIn": {
         "type": "object",
-        "required": ["item_en", "quantity", "unit"],
+        "required": [
+          "item_en",
+          "quantity",
+          "unit"
+        ],
         "properties": {
-          "item_en": { "type": "string", "description": "English item name", "example": "chicken breast" },
-          "item_zh": { "type": "string", "description": "Chinese item name", "example": "鸡胸肉" },
-          "category": { "type": "string", "enum": ["protein", "carb", "veg", "fruit", "condiment", "staple", "snack", "drink", "other"], "default": "other" },
-          "quantity": { "type": "number", "example": 900 },
-          "unit": { "type": "string", "example": "g" },
-          "storage": { "type": "string", "enum": ["fridge", "freezer", "pantry", "counter"], "default": "fridge" },
-          "purchase_date": { "type": "string", "description": "YYYY-MM-DD" },
-          "opened_date": { "type": "string", "description": "YYYY-MM-DD or blank" },
-          "use_by": { "type": "string", "description": "YYYY-MM-DD or blank" },
-          "calories_per_100g": { "type": "number" },
-          "protein_per_100g": { "type": "number" },
-          "carbs_per_100g": { "type": "number" },
-          "fat_per_100g": { "type": "number" },
-          "status": { "type": "string", "enum": ["active", "finished", "archived", "discarded"], "default": "active" },
-          "priority": { "type": "string", "enum": ["high", "medium", "low"], "default": "medium" },
-          "min_quantity": { "type": "number" },
-          "target_quantity": { "type": "number" },
-          "notes": { "type": "string" }
+          "item_en": {
+            "type": "string",
+            "description": "English item name",
+            "example": "chicken breast"
+          },
+          "item_zh": {
+            "type": "string",
+            "description": "Chinese item name",
+            "example": "鸡胸肉"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "protein",
+              "carb",
+              "veg",
+              "fruit",
+              "condiment",
+              "staple",
+              "snack",
+              "drink",
+              "other"
+            ],
+            "default": "other"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 900
+          },
+          "unit": {
+            "type": "string",
+            "example": "g"
+          },
+          "storage": {
+            "type": "string",
+            "enum": [
+              "fridge",
+              "freezer",
+              "pantry",
+              "counter"
+            ],
+            "default": "fridge"
+          },
+          "purchase_date": {
+            "type": "string",
+            "description": "YYYY-MM-DD"
+          },
+          "opened_date": {
+            "type": "string",
+            "description": "YYYY-MM-DD or blank"
+          },
+          "use_by": {
+            "type": "string",
+            "description": "YYYY-MM-DD or blank"
+          },
+          "calories_per_100g": {
+            "type": "number"
+          },
+          "protein_per_100g": {
+            "type": "number"
+          },
+          "carbs_per_100g": {
+            "type": "number"
+          },
+          "fat_per_100g": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "finished",
+              "archived",
+              "discarded"
+            ],
+            "default": "active"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "default": "medium"
+          },
+          "min_quantity": {
+            "type": "number"
+          },
+          "target_quantity": {
+            "type": "number"
+          },
+          "notes": {
+            "type": "string"
+          }
         }
       },
       "AddInventoryPayload": {
         "type": "object",
-        "required": ["items"],
+        "required": [
+          "items"
+        ],
         "properties": {
           "items": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/InventoryItemIn" }
+            "items": {
+              "$ref": "#/components/schemas/InventoryItemIn"
+            }
           }
         }
       },
       "InventoryUpdate": {
         "type": "object",
-        "required": ["id", "fields"],
+        "required": [
+          "id",
+          "fields"
+        ],
         "properties": {
-          "id": { "type": "string", "example": "inv-abc12345" },
+          "id": {
+            "type": "string",
+            "example": "inv-abc12345"
+          },
           "fields": {
             "type": "object",
             "additionalProperties": true,
@@ -73,81 +164,195 @@
       },
       "UpdateInventoryPayload": {
         "type": "object",
-        "required": ["updates"],
+        "required": [
+          "updates"
+        ],
         "properties": {
           "updates": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/InventoryUpdate" }
+            "items": {
+              "$ref": "#/components/schemas/InventoryUpdate"
+            }
           }
         }
       },
       "ConsumeItem": {
         "type": "object",
-        "required": ["quantity_used", "unit"],
+        "required": [
+          "quantity_used",
+          "unit"
+        ],
         "properties": {
-          "item_id": { "type": "string", "description": "Preferred identifier for exact match" },
-          "item_en": { "type": "string", "description": "Fallback match by English name. If multiple active rows match, the API returns 409 and asks for item_id." },
-          "item_zh": { "type": "string", "description": "Fallback match by Chinese name. If multiple active rows match, the API returns 409 and asks for item_id." },
-          "quantity_used": { "type": "number", "example": 300 },
-          "unit": { "type": "string", "example": "g" },
-          "meal": { "type": "string", "example": "lunch" },
-          "reason": { "type": "string", "example": "actual_consumed" },
-          "notes": { "type": "string" }
+          "item_id": {
+            "type": "string",
+            "description": "Preferred identifier for exact match"
+          },
+          "item_en": {
+            "type": "string",
+            "description": "Fallback match by English name. If multiple active rows match, the API returns 409 and asks for item_id."
+          },
+          "item_zh": {
+            "type": "string",
+            "description": "Fallback match by Chinese name. If multiple active rows match, the API returns 409 and asks for item_id."
+          },
+          "quantity_used": {
+            "type": "number",
+            "example": 300
+          },
+          "unit": {
+            "type": "string",
+            "example": "g"
+          },
+          "meal": {
+            "type": "string",
+            "example": "lunch"
+          },
+          "reason": {
+            "type": "string",
+            "example": "actual_consumed"
+          },
+          "notes": {
+            "type": "string"
+          }
         }
       },
       "ConsumePayload": {
         "type": "object",
-        "required": ["items"],
+        "required": [
+          "items"
+        ],
         "properties": {
-          "date": { "type": "string", "description": "YYYY-MM-DD" },
+          "date": {
+            "type": "string",
+            "description": "YYYY-MM-DD"
+          },
           "items": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/ConsumeItem" }
+            "items": {
+              "$ref": "#/components/schemas/ConsumeItem"
+            }
           },
-          "dry_run": { "type": "boolean", "default": false, "description": "Validate and project without writing" }
+          "dry_run": {
+            "type": "boolean",
+            "default": false,
+            "description": "Validate and project without writing"
+          }
         }
       },
       "WeightEntry": {
         "type": "object",
-        "required": ["weight_lb"],
+        "required": [
+          "weight_lb"
+        ],
         "properties": {
-          "date": { "type": "string", "description": "YYYY-MM-DD" },
-          "weight_lb": { "type": "number", "example": 189.2 },
-          "sleep_hours": { "type": "number" },
-          "hunger_1_10": { "type": "number" },
-          "training_perf_1_10": { "type": "number" },
-          "training": { "type": "string" },
-          "calories": { "type": "number" },
-          "protein_g": { "type": "number" },
-          "fast_food": { "type": "string", "enum": ["yes", "no"] },
-          "alcohol": { "type": "string", "enum": ["yes", "no"] },
-          "night_snack": { "type": "string", "enum": ["yes", "no"] },
-          "notes": { "type": "string" }
+          "date": {
+            "type": "string",
+            "description": "YYYY-MM-DD"
+          },
+          "weight_lb": {
+            "type": "number",
+            "example": 189.2
+          },
+          "sleep_hours": {
+            "type": "number"
+          },
+          "hunger_1_10": {
+            "type": "number"
+          },
+          "training_perf_1_10": {
+            "type": "number"
+          },
+          "training": {
+            "type": "string"
+          },
+          "calories": {
+            "type": "number"
+          },
+          "protein_g": {
+            "type": "number"
+          },
+          "fast_food": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no"
+            ]
+          },
+          "alcohol": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no"
+            ]
+          },
+          "night_snack": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          }
         }
       },
       "MealEntry": {
         "type": "object",
-        "required": ["meal_type"],
+        "required": [
+          "meal_type"
+        ],
         "properties": {
-          "date": { "type": "string", "description": "YYYY-MM-DD" },
-          "meal_type": { "type": "string", "example": "lunch" },
-          "planned_or_actual": { "type": "string", "enum": ["planned", "actual"], "default": "planned" },
-          "calories": { "type": "number" },
-          "protein_g": { "type": "number" },
-          "carbs_g": { "type": "number" },
-          "fat_g": { "type": "number" },
-          "food_summary": { "type": "string" },
-          "inventory_used": { "type": "string" },
-          "notes": { "type": "string" }
+          "date": {
+            "type": "string",
+            "description": "YYYY-MM-DD"
+          },
+          "meal_type": {
+            "type": "string",
+            "example": "lunch"
+          },
+          "planned_or_actual": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "actual"
+            ],
+            "default": "planned"
+          },
+          "calories": {
+            "type": "number"
+          },
+          "protein_g": {
+            "type": "number"
+          },
+          "carbs_g": {
+            "type": "number"
+          },
+          "fat_g": {
+            "type": "number"
+          },
+          "food_summary": {
+            "type": "string"
+          },
+          "inventory_used": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
         }
       },
       "MealLogPayload": {
         "type": "object",
-        "required": ["meals"],
+        "required": [
+          "meals"
+        ],
         "properties": {
           "meals": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/MealEntry" }
+            "items": {
+              "$ref": "#/components/schemas/MealEntry"
+            }
           }
         }
       }
@@ -159,14 +364,51 @@
         "operationId": "actionProbe",
         "summary": "No-auth connectivity probe for Custom GPT Action debugging.",
         "security": [],
-        "responses": { "200": { "description": "OK" } }
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/health": {
       "get": {
         "operationId": "health",
         "summary": "Check whether the API is reachable.",
-        "responses": { "200": { "description": "OK" }, "401": { "description": "Invalid or missing API key" } }
+        "responses": {
+          "200": {
+            "description": "Backend is healthy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "spreadsheet_id_configured": {
+                      "type": "boolean"
+                    },
+                    "timezone": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          }
+        }
       }
     },
     "/setup/headers": {
@@ -174,7 +416,19 @@
         "operationId": "setupHeaders",
         "summary": "Write standard headers to all expected Google Sheet tabs.",
         "description": "Use once after creating/importing the spreadsheet template. Does not delete data rows.",
-        "responses": { "200": { "description": "Headers written" } }
+        "responses": {
+          "200": {
+            "description": "Headers written",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/coach-context": {
@@ -183,9 +437,30 @@
         "summary": "Get all context needed for a daily meal plan.",
         "description": "Returns settings, active inventory, expiring inventory, weight trend, and suggested shopping list.",
         "parameters": [
-          { "name": "expiring_days", "in": "query", "schema": { "type": "integer", "default": 3, "minimum": 0, "maximum": 14 } }
+          {
+            "name": "expiring_days",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 3,
+              "minimum": 0,
+              "maximum": 14
+            }
+          }
         ],
-        "responses": { "200": { "description": "Daily coach context" } }
+        "responses": {
+          "200": {
+            "description": "Daily coach context",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/inventory": {
@@ -193,9 +468,28 @@
         "operationId": "getInventory",
         "summary": "Get current inventory.",
         "parameters": [
-          { "name": "include_archived", "in": "query", "schema": { "type": "boolean", "default": false } }
+          {
+            "name": "include_archived",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
         ],
-        "responses": { "200": { "description": "Inventory items" } }
+        "responses": {
+          "200": {
+            "description": "Inventory items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/inventory/add": {
@@ -204,9 +498,27 @@
         "summary": "Add newly purchased ingredients to inventory.",
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AddInventoryPayload" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddInventoryPayload"
+              }
+            }
+          }
         },
-        "responses": { "200": { "description": "Created inventory rows" } }
+        "responses": {
+          "200": {
+            "description": "Created inventory rows",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/inventory/update": {
@@ -215,9 +527,27 @@
         "summary": "Update existing inventory rows by ID.",
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateInventoryPayload" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInventoryPayload"
+              }
+            }
+          }
         },
-        "responses": { "200": { "description": "Updated inventory rows" } }
+        "responses": {
+          "200": {
+            "description": "Updated inventory rows",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/inventory/consume": {
@@ -227,9 +557,30 @@
         "description": "Use only after the user confirms actual consumption. Prefer item_id. Use dry_run=true to preview deductions.",
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ConsumePayload" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsumePayload"
+              }
+            }
+          }
         },
-        "responses": { "200": { "description": "Inventory consumption result" }, "409": { "description": "Ambiguous or inactive inventory item" } }
+        "responses": {
+          "200": {
+            "description": "Inventory consumption result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ambiguous or inactive inventory item"
+          }
+        }
       }
     },
     "/inventory/expiring": {
@@ -237,9 +588,30 @@
         "operationId": "getExpiringInventory",
         "summary": "Get ingredients expiring soon.",
         "parameters": [
-          { "name": "days", "in": "query", "schema": { "type": "integer", "default": 3, "minimum": 0, "maximum": 30 } }
+          {
+            "name": "days",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 3,
+              "minimum": 0,
+              "maximum": 30
+            }
+          }
         ],
-        "responses": { "200": { "description": "Expiring inventory items" } }
+        "responses": {
+          "200": {
+            "description": "Expiring inventory items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/weight-log": {
@@ -248,24 +620,75 @@
         "summary": "Log morning body weight and related daily signals.",
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WeightEntry" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeightEntry"
+              }
+            }
+          }
         },
-        "responses": { "200": { "description": "Weight logged" } }
+        "responses": {
+          "200": {
+            "description": "Weight logged",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
       },
       "get": {
         "operationId": "getWeightLog",
         "summary": "Get recent body-weight log.",
         "parameters": [
-          { "name": "days", "in": "query", "schema": { "type": "integer", "default": 30, "minimum": 1, "maximum": 365 } }
+          {
+            "name": "days",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 30,
+              "minimum": 1,
+              "maximum": 365
+            }
+          }
         ],
-        "responses": { "200": { "description": "Weight log rows" } }
+        "responses": {
+          "200": {
+            "description": "Weight log rows",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/trend-summary": {
       "get": {
         "operationId": "getTrendSummary",
         "summary": "Compute 7-day vs previous 7-day body-weight trend.",
-        "responses": { "200": { "description": "Trend summary" } }
+        "responses": {
+          "200": {
+            "description": "Trend summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/meal-log": {
@@ -274,16 +697,46 @@
         "summary": "Log planned or actual meals and macro estimates.",
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MealLogPayload" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MealLogPayload"
+              }
+            }
+          }
         },
-        "responses": { "200": { "description": "Meal entries logged" } }
+        "responses": {
+          "200": {
+            "description": "Meal entries logged",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/shopping-list/suggested": {
       "get": {
         "operationId": "getSuggestedShoppingList",
         "summary": "Suggest replenishment based on inventory min/target quantities.",
-        "responses": { "200": { "description": "Suggested shopping list" } }
+        "responses": {
+          "200": {
+            "description": "Suggested shopping list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
